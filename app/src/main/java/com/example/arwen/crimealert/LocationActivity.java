@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,21 +33,29 @@ public class LocationActivity extends AppCompatActivity {
 
             public void onProviderDisabled(String provider) {}
         };
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        txtLocation.setText("Latitude:");
-        if(permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            Log.d("Network", "Network");
-            if (locationManager != null) {
-                Location loc = locationManager
-                        .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                txtLocation.setText("Latitude:" + loc.getLatitude() + ", Longitude:" + loc.getLongitude());
+
+            int permissionCheck = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+            txtLocation.setText(("Lat" + permissionCheck));
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                txtLocation.setText("Latitude:");
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                Log.d("Network", "Network");
+                if (locationManager != null) {
+                    Location loc = locationManager
+                            .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    if(loc != null)
+                        txtLocation.setText("Latitude:" + loc.getLatitude() + ", Longitude:" + loc.getLongitude());
+                }
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
+                txtLocation.setText("Longitude:");
 
             }
-        }
+
 
     }
+
 
     private void newLocationChange(Location location) {
 
